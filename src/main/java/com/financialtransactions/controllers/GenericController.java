@@ -1,7 +1,14 @@
 package com.financialtransactions.controllers;
 
+import org.springframework.web.util.UriComponentsBuilder;
+
 public class GenericController {
-    private final String CONTROLLER = "controller";
+    protected final String CONTROLLER = "controller";
+    protected final String ID = "/{id}";
+    protected UriComponentsBuilder uriBuilder;
+    protected String getByIdPath(){
+        return this.getPath() + ID;
+    }
     /**
      * Get the base path of the controller.
      *

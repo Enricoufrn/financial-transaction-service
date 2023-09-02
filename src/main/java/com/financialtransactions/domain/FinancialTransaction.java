@@ -24,8 +24,7 @@ public class FinancialTransaction {
     public FinancialTransaction() {
         this.reversed = false;
     }
-    public FinancialTransaction(UUID id, User sender, User receiver, BigDecimal value) {
-        this.id = id;
+    public FinancialTransaction(User sender, User receiver, BigDecimal value) {
         this.sender = sender;
         this.receiver = receiver;
         this.value = value;

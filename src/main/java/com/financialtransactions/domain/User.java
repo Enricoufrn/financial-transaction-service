@@ -2,6 +2,8 @@ package com.financialtransactions.domain;
 
 import com.financialtransactions.enumerations.UserType;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 
 import java.util.UUID;
 
@@ -12,17 +14,24 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     @Column
+    @NotBlank
     private String name;
+    @NotBlank
     @Column(unique = true)
+    @Pattern(regexp = "^(.+)@(.+)$")
     private String email;
+    @NotBlank
     @Column(unique = true)
     private String login;
+    @NotBlank
     private String password;
     /**
      * This field must be a CPF or CNPJ.
      */
+    @NotBlank
     @Column(unique = true)
     private String document;
+    @NotBlank
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
@@ -30,8 +39,7 @@ public class User {
     public User() {
     }
 
-    public User(UUID id, String name, String email, String login, String password, String document, UserType userType) {
-        this.id = id;
+    public User(String name, String email, String login, String password, String document, UserType userType) {
         this.name = name;
         this.email = email;
         this.login = login;

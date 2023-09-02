@@ -1,12 +1,14 @@
 package com.financialtransactions.controllers;
 
+import com.financialtransactions.domain.User;
+import com.financialtransactions.dtos.UserDTO;
 import com.financialtransactions.services.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.UUID;
 
 @Controller
@@ -21,8 +23,14 @@ public class UserController extends GenericController{
     public ResponseEntity<?> getUsers() {
         return ResponseEntity.ok(this.userService.findAll());
     }
-    @GetMapping("/{id}")
+    @GetMapping(ID)
     public ResponseEntity<?> getUserById(@PathVariable UUID id) {
         return ResponseEntity.ok(this.userService.findById(id));
+    }
+    @PostMapping
+    public ResponseEntity<?> saveUser(@RequestBody @Valid UserDTO user) {
+        User savedUser = this.userService.save(user);
+        URI uri = uriBuilder.path(this.getByIdPath()).buildAndExpand(savedUser.getId()).toUri();
+        return ResponseEntity.created(uri).build();
     }
 }

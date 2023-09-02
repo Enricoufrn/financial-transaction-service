@@ -1,6 +1,7 @@
 package com.financialtransactions.services;
 
 import com.financialtransactions.domain.User;
+import com.financialtransactions.dtos.UserDTO;
 import com.financialtransactions.enumerations.MessageCode;
 import com.financialtransactions.exceptions.ResourceException;
 import com.financialtransactions.helper.MessageHelper;
@@ -27,7 +28,9 @@ public class UserService {
     public List<User> findAll() {
         return this.userRepository.findAll();
     }
-    public User save(User user) {
+    public User save(UserDTO userDto) {
+        User user = new User(userDto.name(), userDto.email(), userDto.login(),
+                userDto.password(), userDto.document(), userDto.type());
         return this.userRepository.save(user);
     }
 }
