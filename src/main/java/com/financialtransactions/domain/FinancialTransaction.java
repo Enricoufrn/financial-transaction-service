@@ -18,15 +18,18 @@ public class FinancialTransaction {
     @JoinColumn(name = "user_receiver_id")
     private User receiver;
     private BigDecimal value;
+    private Boolean reversed;
 
     // Constructors
     public FinancialTransaction() {
+        this.reversed = false;
     }
     public FinancialTransaction(UUID id, User sender, User receiver, BigDecimal value) {
         this.id = id;
         this.sender = sender;
         this.receiver = receiver;
         this.value = value;
+        this.reversed = false;
     }
 
     // Getters and Setters
@@ -61,5 +64,13 @@ public class FinancialTransaction {
 
     public void setValue(BigDecimal value) {
         this.value = value;
+    }
+
+    public Boolean getReversed() {
+        return reversed;
+    }
+
+    public void setReversed(Boolean reversed) {
+        this.reversed = reversed;
     }
 }
