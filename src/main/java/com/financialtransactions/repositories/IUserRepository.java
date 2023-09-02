@@ -1,2 +1,10 @@
-package com.financialtransactions.repositories;public interface IUserRepository {
+package com.financialtransactions.repositories;
+
+import com.financialtransactions.domain.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.UUID;
+@Repository
+public interface IUserRepository extends JpaRepository<User, UUID> {
 }
