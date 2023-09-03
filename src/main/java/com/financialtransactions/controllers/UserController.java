@@ -4,15 +4,14 @@ import com.financialtransactions.domain.User;
 import com.financialtransactions.dtos.UserDTO;
 import com.financialtransactions.services.UserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.UUID;
 
-@Controller
-@RequestMapping("/user")
+@RestController
+@RequestMapping("api/user")
 public class UserController extends GenericController{
     private UserService userService;
 

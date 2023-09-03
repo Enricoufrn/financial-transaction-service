@@ -9,7 +9,13 @@ import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.ParamDef;
 import org.hibernate.annotations.SQLDelete;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -17,7 +23,7 @@ import java.util.UUID;
 @SQLDelete(sql = "UPDATE users SET active = false WHERE id = ?")
 @FilterDef(name = "activeUserFilter", parameters = @ParamDef(name = "active", type = Boolean.class))
 @Filter(name = "activeUserFilter", condition = "active = :active")
-public class User {
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -125,5 +131,39 @@ public class User {
 
     public void setActive(Boolean active) {
         this.active = active;
+    }
+
+    // Methods from UserDetails interface
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        // todo: implementar a lógica de permissões
+//        authorities.add(new SimpleGrantedAuthority(role.getRole().getAuthority()));
+        return authorities;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.login;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return getActive();
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return getActive();
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return getActive();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return getActive();
     }
 }

@@ -49,6 +49,11 @@ public class UserService {
         this.userRepository.deleteById(id);
     }
 
+    public User findByLogin(String login) {
+        return this.userRepository.findByLogin(login).orElseThrow(() ->
+                new ResourceException(this.messageHelper.getMessage(MessageCode.USER_NOT_FOUND), HttpStatus.NOT_FOUND, "login: "+ login));
+    }
+
     public void validateUser(User user){
         this.validateLogin(user.getLogin());
         this.validateEmail(user.getEmail());
