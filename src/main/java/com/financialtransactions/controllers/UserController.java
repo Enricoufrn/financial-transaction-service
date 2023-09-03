@@ -32,7 +32,8 @@ public class UserController extends GenericController{
     @PostMapping
     public ResponseEntity<?> saveUser(@RequestBody @Valid UserDTO user) {
         User savedUser = this.userService.save(user);
+        UserDTO userDTO = new UserDTO(savedUser);
         URI uri = uriBuilder.path(this.getByIdPath()).buildAndExpand(savedUser.getId()).toUri();
-        return ResponseEntity.created(uri).build();
+        return ResponseEntity.created(uri).body(savedUser);
     }
 }
