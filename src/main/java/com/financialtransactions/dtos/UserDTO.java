@@ -17,6 +17,6 @@ public record UserDTO(UUID id, String name, String email, String login, String p
     }
 
     public UserDTO(User user) {
-        this(user.getId(), user.getName(), user.getEmail(), user.getLogin(), user.getPassword(), user.getUserType(), user.getDocument());
+        this(user.getId(), user.getName(), user.getEmail(), user.getLogin(), "", user.getUserType(), user.getDocument());
     }
 }

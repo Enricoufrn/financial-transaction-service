@@ -5,11 +5,18 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.ParamDef;
+import org.hibernate.annotations.SQLDelete;
 
 import java.util.UUID;
 
 @Entity
 @Table(name = "users")
+@SQLDelete(sql = "UPDATE users SET active = false WHERE id = ?")
+@FilterDef(name = "activeUserFilter", parameters = @ParamDef(name = "active", type = Boolean.class))
+@Filter(name = "activeUserFilter", condition = "active = :active")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -36,6 +43,10 @@ public class User {
     @NotNull(message = "O tipo do usuário é obrigatório.")
     @Enumerated(EnumType.STRING)
     private UserType userType;
+    /**
+     * This field is used to logically delete the user.
+     */
+    private Boolean active = Boolean.TRUE;
 
     // Constructors
     public User() {
@@ -106,5 +117,13 @@ public class User {
 
     public void setUserType(UserType userType) {
         this.userType = userType;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 }

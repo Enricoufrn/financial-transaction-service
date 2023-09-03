@@ -38,6 +38,17 @@ public class UserService {
         return this.userRepository.save(user);
     }
 
+    public User update(UUID id, UserDTO user){
+        User userToUpdate = this.findById(id);
+        this.updateUser(user, userToUpdate);
+        return this.userRepository.save(userToUpdate);
+    }
+    public void delete(UUID id) {
+        this.userRepository.findById(id).orElseThrow(() ->
+                new ResourceException(this.messageHelper.getMessage(MessageCode.USER_NOT_FOUND), HttpStatus.NOT_FOUND, "id: "+ id));
+        this.userRepository.deleteById(id);
+    }
+
     public void validateUser(User user){
         this.validateLogin(user.getLogin());
         this.validateEmail(user.getEmail());
@@ -59,5 +70,13 @@ public class UserService {
         this.userRepository.findByDocument(document).ifPresent(user -> {
             throw new ResourceException(this.messageHelper.getMessage(MessageCode.USER_WITH_DOCUMENT_ALREADY_EXISTS), HttpStatus.BAD_REQUEST, documentType+document);
         });
+    }
+
+    private void updateUser(UserDTO user, User userToUpdate){
+        userToUpdate.setName(user.name());
+        userToUpdate.setEmail(user.email());
+        userToUpdate.setLogin(user.login());
+        userToUpdate.setDocument(user.document());
+        userToUpdate.setUserType(user.type());
     }
 }
