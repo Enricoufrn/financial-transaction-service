@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Configuration
 public class AppConfig {
@@ -18,5 +19,9 @@ public class AppConfig {
         messageSource.setBasename("classpath:messages");
         messageSource.setDefaultEncoding("UTF-8");
         return messageSource;
+    }
+    @Bean
+    UriComponentsBuilder uriBuilder() {
+        return UriComponentsBuilder.newInstance();
     }
 }

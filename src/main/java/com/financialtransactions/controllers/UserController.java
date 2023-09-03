@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.UUID;
@@ -16,7 +17,8 @@ import java.util.UUID;
 public class UserController extends GenericController{
     private UserService userService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UriComponentsBuilder uriBuilder) {
+        super(uriBuilder);
         this.userService = userService;
     }
     @GetMapping

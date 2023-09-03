@@ -6,6 +6,11 @@ public class GenericController {
     protected final String CONTROLLER = "controller";
     protected final String ID = "/{id}";
     protected UriComponentsBuilder uriBuilder;
+
+    public GenericController(UriComponentsBuilder uriBuilder) {
+        this.uriBuilder = uriBuilder;
+    }
+
     protected String getByIdPath(){
         return this.getPath() + ID;
     }

@@ -3,6 +3,7 @@ package com.financialtransactions.domain;
 import com.financialtransactions.enumerations.UserType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 import java.util.UUID;
@@ -14,24 +15,25 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     @Column
-    @NotBlank
+    @NotBlank(message = "O nome do usuário é obrigatório.")
     private String name;
-    @NotBlank
+    @NotBlank(message = "O email do usuário é obrigatório.")
     @Column(unique = true)
-    @Pattern(regexp = "^(.+)@(.+)$")
+    @Pattern(regexp = "^(.+)@(.+)$", message = "O email do usuário é inválido.")
     private String email;
-    @NotBlank
+    @NotBlank(message = "O login do usuário é obrigatório.")
     @Column(unique = true)
     private String login;
     @NotBlank
+    @NotBlank(message = "A senha do usuário é obrigatório.")
     private String password;
     /**
      * This field must be a CPF or CNPJ.
      */
-    @NotBlank
+    @NotBlank(message = "O documento do usuário é obrigatório.")
     @Column(unique = true)
     private String document;
-    @NotBlank
+    @NotNull(message = "O tipo do usuário é obrigatório.")
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
