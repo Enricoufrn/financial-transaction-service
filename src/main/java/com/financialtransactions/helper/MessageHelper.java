@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MessageHelper {
-    private MessageSource messageSource;
+    private final MessageSource messageSource;
     public MessageHelper(MessageSource messageSource) {
         this.messageSource = messageSource;
     }

@@ -8,8 +8,17 @@ public enum MessageCode {
     RESOURCE_NOT_FOUND("resource.not.found"),
     USER_WITH_DOCUMENT_ALREADY_EXISTS("user.with.document.already.exists"),
     USER_WITH_LOGIN_ALREADY_EXISTS("user.with.login.already.exists"),
-    USER_WITH_EMAIL_ALREADY_EXISTS("user.with.email.already.exists");
+    USER_WITH_EMAIL_ALREADY_EXISTS("user.with.email.already.exists"),
 
+    // auth
+    AUTHORIZATION_HEADER_NOT_FOUND("authorization.header.not.found"),
+    TOKEN_NOT_FOUND("token.not.found"),
+    INVALID_TOKEN("invalid.token"),
+    INVALID_LOGIN("invalid.login"),
+    INVALID_PASSWORD("invalid.password"),
+    INVALID_CREDENTIALS("invalid.credentials"),
+    INVALID_AUTHORIZATION_HEADER("invalid.authorization.header"),
+    AUTHENTICATION_NOT_FINALLY("authentication.not.finally");
     private String code;
 
     MessageCode(String code) {

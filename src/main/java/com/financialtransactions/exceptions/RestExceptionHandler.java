@@ -3,6 +3,7 @@ package com.financialtransactions.exceptions;
 import com.financialtransactions.dtos.ApiError;
 import com.financialtransactions.enumerations.MessageCode;
 import com.financialtransactions.helper.MessageHelper;
+import jakarta.servlet.ServletException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -25,7 +26,7 @@ public class RestExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiError> handleException(Exception exception) {
+    public ResponseEntity<ApiError> handleException() {
         ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), this.messageHelper.getMessage(MessageCode.INTERNAL_SERVER_ERROR), "");
         return getResponseEntity(apiError, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -39,6 +40,22 @@ public class RestExceptionHandler {
         constraintViolationException.getLocalizedMessage();
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.getReasonPhrase(), this.messageHelper.getMessage(MessageCode.INTERNAL_SERVER_ERROR), "");
         return getResponseEntity(apiError, HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(CustomAuthorizationException.class)
+    public ResponseEntity<ApiError> handlerCustomAuthenticationExceptions(CustomAuthorizationException customAuthorizationException) {
+        ApiError apiError = new ApiError(customAuthorizationException.getHttpStatus().getReasonPhrase(), customAuthorizationException.getMessage(), customAuthorizationException.getDetails());
+        return getResponseEntity(apiError, customAuthorizationException.getHttpStatus());
+    }
+    @ExceptionHandler(ServletException.class)
+    public ResponseEntity<ApiError> handlerServletException(ServletException servletException) {
+        ApiError apiError = new ApiError(HttpStatus.FORBIDDEN.getReasonPhrase(), this.messageHelper.getMessage(MessageCode.INTERNAL_SERVER_ERROR), "");
+        return getResponseEntity(apiError, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(GenerateTokenException.class)
+    public ResponseEntity<ApiError> handlerGenerateTokenExceptions(GenerateTokenException generateTokenException) {
+        ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), generateTokenException.getMessage(), generateTokenException.getDetails());
+        return getResponseEntity(apiError, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private ResponseEntity<ApiError> getResponseEntity(ApiError apiError, HttpStatus httpStatus) {

@@ -3,7 +3,7 @@ package com.financialtransactions.services;
 import com.financialtransactions.domain.User;
 import com.financialtransactions.dtos.UserDTO;
 import com.financialtransactions.enumerations.MessageCode;
-import com.financialtransactions.enumerations.UserType;
+import com.financialtransactions.enumerations.Role;
 import com.financialtransactions.exceptions.ResourceException;
 import com.financialtransactions.helper.MessageHelper;
 import com.financialtransactions.repositories.IUserRepository;
@@ -17,8 +17,8 @@ import java.util.UUID;
 @Service
 @Transactional
 public class UserService {
-    private IUserRepository userRepository;
-    private MessageHelper messageHelper;
+    private final IUserRepository userRepository;
+    private final MessageHelper messageHelper;
 
     public UserService(IUserRepository userRepository, MessageHelper messageHelper) {
         this.userRepository = userRepository;
@@ -70,8 +70,8 @@ public class UserService {
             throw new ResourceException(this.messageHelper.getMessage(MessageCode.USER_WITH_EMAIL_ALREADY_EXISTS), HttpStatus.BAD_REQUEST, "email: "+ email);
         });
     }
-    private void validateDocument(String document, UserType type) {
-        String documentType = type.equals(UserType.COMMON) ? "CPF: " : "CNPJ: ";
+    private void validateDocument(String document, Role role) {
+        String documentType = role.equals(Role.ROLE_COMMON) ? "CPF: " : "CNPJ: ";
         this.userRepository.findByDocument(document).ifPresent(user -> {
             throw new ResourceException(this.messageHelper.getMessage(MessageCode.USER_WITH_DOCUMENT_ALREADY_EXISTS), HttpStatus.BAD_REQUEST, documentType+document);
         });

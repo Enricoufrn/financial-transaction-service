@@ -5,7 +5,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class GenericController {
     protected final String CONTROLLER = "controller";
     protected final String ID = "/{id}";
-    protected UriComponentsBuilder uriBuilder;
+    protected final UriComponentsBuilder uriBuilder;
 
     public GenericController(UriComponentsBuilder uriBuilder) {
         this.uriBuilder = uriBuilder;

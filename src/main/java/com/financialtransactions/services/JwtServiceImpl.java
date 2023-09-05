@@ -1,5 +1,8 @@
 package com.financialtransactions.services;
 
+import com.financialtransactions.enumerations.MessageCode;
+import com.financialtransactions.exceptions.GenerateTokenException;
+import com.financialtransactions.helper.MessageHelper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -9,58 +12,112 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Function;
 
 @Service
-public class JwtServiceImpl implements JwtService{
-    static final String PREFIX = "Bearer";
+public class JwtServiceImpl implements IJwtService {
 
     @Value("${jwt.secret.key}")
     private String secretKey;
 
     @Value("${jwt.expiration_time}")
     private long expirationTime;
-    @Override
-    public String extractLogin(String token) {
-        return extractAllClaims(token).getSubject();
+    private final MessageHelper messageHelper;
+
+    public JwtServiceImpl(MessageHelper messageHelper) {
+        this.messageHelper = messageHelper;
     }
 
     @Override
-    public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+    public String extractLogin(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
+
+    @Override
+    public String generateToken(UserDetails userDetails) throws GenerateTokenException {
+        if (Objects.isNull(userDetails)){
+            throw new GenerateTokenException(this.messageHelper.getMessage(MessageCode.AUTHENTICATION_NOT_FINALLY),
+                    this.messageHelper.getMessage(MessageCode.INTERNAL_SERVER_ERROR));
+        }else return generateToken(new HashMap<>(), userDetails);
     }
 
     @Override
     public boolean isValidToken(String token, UserDetails userDetails) {
+        if (token == null || token.isEmpty() || userDetails == null){
+            return false;
+        }
         final String userName = extractLogin(token);
         return (userName.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
+    /**
+     * Checks if token is expired
+     * @param token jwt token
+     * @return true if token is expired, false otherwise
+     */
     private boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
+    /**
+     * Extracts expiration date from token
+     * @param token jwt token
+     * @return expiration date
+     */
     private Date extractExpiration(String token) {
-        return extractAllClaims(token).getExpiration();
+        return extractClaim(token, Claims::getExpiration);
     }
 
+    /**
+     * Extracts claim from token
+     * @param token jwt token
+     * @param claimsResolver claims resolver
+     * @param <T> type of claim
+     * @return claim
+     */
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
+    }
+
+    /**
+     * Extracts all claims from token
+     * @param token jwt token
+     * @return claims
+     */
     private Claims extractAllClaims(String token) {
-        return Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token)
+        return Jwts
+                .parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
                 .getBody();
     }
+
+    /**
+     * Generates signing key from secret key
+     * @return signing key
+     */
     private Key getSigningKey() {
         byte[] keyBytes = Base64.getDecoder().decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
+    /**
+     * Generates new jwt token
+     * @param extraClaims extra claims
+     * @param userDetails user details object
+     * @return jwt token
+     */
     private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        return Jwts.builder().setClaims(extraClaims)
+        return Jwts
+                .builder()
+                .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256).compact();
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
     }
 }

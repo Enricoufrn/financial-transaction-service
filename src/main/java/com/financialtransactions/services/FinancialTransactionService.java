@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class FinancialTransactionService {
-    private IFinancialTransactionRepository financialTransactionRepository;
+    private final IFinancialTransactionRepository financialTransactionRepository;
 
     public FinancialTransactionService(IFinancialTransactionRepository financialTransactionRepository) {
         this.financialTransactionRepository = financialTransactionRepository;

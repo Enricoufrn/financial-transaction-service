@@ -1,6 +1,6 @@
 package com.financialtransactions.domain;
 
-import com.financialtransactions.enumerations.UserType;
+import com.financialtransactions.enumerations.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -46,9 +46,9 @@ public class User implements UserDetails {
     @NotBlank(message = "O documento do usuário é obrigatório.")
     @Column(unique = true)
     private String document;
-    @NotNull(message = "O tipo do usuário é obrigatório.")
+    @NotNull(message = "É necessário informar as permissões do usuário.")
     @Enumerated(EnumType.STRING)
-    private UserType userType;
+    private Role role;
     /**
      * This field is used to logically delete the user.
      */
@@ -58,13 +58,13 @@ public class User implements UserDetails {
     public User() {
     }
 
-    public User(String name, String email, String login, String password, String document, UserType userType) {
+    public User(String name, String email, String login, String password, String document, Role role) {
         this.name = name;
         this.email = email;
         this.login = login;
         this.password = password;
         this.document = document;
-        this.userType = userType;
+        this.role = role;
     }
 
     // Getters and Setters
@@ -117,12 +117,12 @@ public class User implements UserDetails {
         this.document = document;
     }
 
-    public UserType getUserType() {
-        return userType;
+    public Role getUserType() {
+        return role;
     }
 
-    public void setUserType(UserType userType) {
-        this.userType = userType;
+    public void setUserType(Role role) {
+        this.role = role;
     }
 
     public Boolean getActive() {
@@ -137,8 +137,7 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
-        // todo: implementar a lógica de permissões
-//        authorities.add(new SimpleGrantedAuthority(role.getRole().getAuthority()));
+        authorities.add(new SimpleGrantedAuthority(role.name()));
         return authorities;
     }
 

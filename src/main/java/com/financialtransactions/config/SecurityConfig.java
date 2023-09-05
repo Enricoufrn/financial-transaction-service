@@ -1,5 +1,7 @@
 package com.financialtransactions.config;
 
+import com.financialtransactions.helper.MessageHelper;
+import com.financialtransactions.services.IJwtService;
 import com.financialtransactions.services.MyUserDetailsService;
 import com.financialtransactions.services.UserService;
 import org.springframework.context.annotation.Bean;
@@ -15,14 +17,19 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    private UserService userService;
+    private final UserService userService;
+    private final MessageHelper messageHelper;
+    private final IJwtService IJwtService;
 
-    public SecurityConfig(UserService userService) {
+    public SecurityConfig(UserService userService, MessageHelper messageHelper, IJwtService IJwtService) {
         this.userService = userService;
+        this.messageHelper = messageHelper;
+        this.IJwtService = IJwtService;
     }
 
     @Bean
@@ -31,16 +38,16 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request ->
                         // login endpoint
-                        request.requestMatchers("/api/auth/login").permitAll()
+                        request
+                                .requestMatchers("/api/auth/login").permitAll()
                                 // others endpoints
-                                .requestMatchers("/api/authentication-test/admin-user").hasRole("ADMIN")
+                                .requestMatchers("/api/auth/admin-user").hasRole("ADMIN")
                                 .requestMatchers("/api***").authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin(AbstractHttpConfigurer::disable);
 
         http.authenticationManager(authManager(http));
-
-        // todo: adicionar filtro de autenticação jwt
+        http.addFilterBefore(new JwtAuthenticationFilter(this.userDetailsService(), this.messageHelper, this.IJwtService), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

@@ -1,12 +1,11 @@
 package com.financialtransactions.services;
 
-import com.financialtransactions.domain.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 public class MyUserDetailsService implements UserDetailsService {
-    private UserService service;
+    private final UserService service;
 
     public MyUserDetailsService(UserService service) {
         this.service = service;
