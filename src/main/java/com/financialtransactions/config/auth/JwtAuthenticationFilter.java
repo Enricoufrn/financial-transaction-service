@@ -19,8 +19,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-import static com.financialtransactions.utils.AuthUtils.AUTHORIZATION_PREFIX_HEADER;
-import static com.financialtransactions.utils.AuthUtils.TOKEN_IDENTIFICATION_PREFIX;
+import static com.financialtransactions.utils.AuthUtils.*;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -39,7 +38,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         final String authorizationHeader = request.getHeader(AUTHORIZATION_PREFIX_HEADER);
-        if  (request.getServletPath().equals("/api/v1/auth/login")){
+        if  (request.getServletPath().equals(AUTHENTICATION_URL)){
             filterChain.doFilter(request, response);
             return;
         }
