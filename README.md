@@ -1,2 +1,2 @@
 # financial-transaction-service
-Exemplo para fins didáticos de um microserviço para gerenciar transações financeiras
+Exemplo para fins didáticos de uma API para realização de transações financeiras
