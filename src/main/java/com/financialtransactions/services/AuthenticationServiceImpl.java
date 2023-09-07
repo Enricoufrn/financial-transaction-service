@@ -38,7 +38,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     }
 
     @Override
-    public void addJwtTokenToHeader(UserDetails userDetails, HttpServletResponse response) throws GenerateTokenException {
+    public void addJwtTokenToHeader(UserDetails userDetails, HttpServletResponse response) {
         String token = this.jwtService.generateToken(userDetails);
         response.addHeader(AuthUtils.AUTHORIZATION_PREFIX_HEADER, AuthUtils.TOKEN_IDENTIFICATION_PREFIX + token);
         response.addHeader(AuthUtils.ACCESS_CONTROL_EXPOSE_HEADERS, AuthUtils.AUTHORIZATION_PREFIX_HEADER);

@@ -24,7 +24,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthenticationRequestDTO authenticationRequestDTO, HttpServletResponse response) throws ServletException, GenerateTokenException {
+    public ResponseEntity<?> login(@RequestBody AuthenticationRequestDTO authenticationRequestDTO, HttpServletResponse response) throws ServletException {
         Authentication authentication = this.authenticationService.authenticate(authenticationRequestDTO.login(), authenticationRequestDTO.password());
         UserDTO userDTO = new UserDTO((User) authentication.getPrincipal());
         this.authenticationService.addJwtTokenToHeader(this.userDetailsService.loadUserByUsername(userDTO.login()), response);
@@ -37,5 +37,9 @@ public class AuthenticationController {
     @GetMapping("/admin-user")
     public String adminUser() {
         return "Se você chegou até aqui é porque você é um usuário administrador";
+    }
+    @GetMapping("/shopkeeper-user")
+    public String shopkeeperUser() {
+        return "Se você chegou até aqui é porque você é um usuário logista";
     }
 }

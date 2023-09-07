@@ -6,6 +6,7 @@ import com.financialtransactions.enumerations.MessageCode;
 import com.financialtransactions.enumerations.Role;
 import com.financialtransactions.exceptions.ResourceException;
 import com.financialtransactions.helper.MessageHelper;
+import com.financialtransactions.helper.PasswordHelper;
 import com.financialtransactions.repositories.IUserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -19,10 +20,12 @@ import java.util.UUID;
 public class UserService {
     private final IUserRepository userRepository;
     private final MessageHelper messageHelper;
+    private final PasswordHelper passwordHelper;
 
-    public UserService(IUserRepository userRepository, MessageHelper messageHelper) {
+    public UserService(IUserRepository userRepository, MessageHelper messageHelper, PasswordHelper passwordHelper) {
         this.userRepository = userRepository;
         this.messageHelper = messageHelper;
+        this.passwordHelper = passwordHelper;
     }
     public User findById(UUID id) {
         return this.userRepository.findById(id).orElseThrow(() ->
@@ -32,9 +35,10 @@ public class UserService {
         return this.userRepository.findAll();
     }
     public User save(UserDTO userDto) {
-        User user = new User(userDto.name(), userDto.email(), userDto.login(),
-                userDto.password(), userDto.document(), userDto.type());
+        User user = new User(userDto.id(), userDto.name(), userDto.email(), userDto.login(),
+                userDto.password(), userDto.document(), userDto.role());
         this.validateUser(user);
+        processPassword(user);
         return this.userRepository.save(user);
     }
 
@@ -57,7 +61,7 @@ public class UserService {
     public void validateUser(User user){
         this.validateLogin(user.getLogin());
         this.validateEmail(user.getEmail());
-        this.validateDocument(user.getDocument(), user.getUserType());
+        this.validateDocument(user.getDocument(), user.getRole());
     }
 
     private void validateLogin(String login) {
@@ -77,11 +81,35 @@ public class UserService {
         });
     }
 
+    /**
+     * This method verify if is needed to encrypt the password.
+     * @param user The user.
+     */
+    public void processPassword(User user){
+        if(user != null){
+            if(user.getId() == null){
+                // new user
+                user.setPassword(passwordHelper.generatePassword(user.getPassword()));
+            }else{
+                // update user password
+                User saved = findById(user.getId());
+                if (saved != null){
+                    if (!user.getPassword().isEmpty()){
+                        String encryptedPassword = passwordHelper.generatePassword(user.getPassword());
+                        if (!saved.getPassword().equals(encryptedPassword)){
+                            user.setPassword(encryptedPassword);
+                        }
+                    }else user.setPassword(saved.getPassword());
+                }else throw new ResourceException(this.messageHelper.getMessage(MessageCode.USER_NOT_FOUND), HttpStatus.NOT_FOUND, "id: "+ user.getId());
+            }
+        }
+    }
+
     private void updateUser(UserDTO user, User userToUpdate){
         userToUpdate.setName(user.name());
         userToUpdate.setEmail(user.email());
         userToUpdate.setLogin(user.login());
         userToUpdate.setDocument(user.document());
-        userToUpdate.setUserType(user.type());
+        userToUpdate.setRole(user.role());
     }
 }

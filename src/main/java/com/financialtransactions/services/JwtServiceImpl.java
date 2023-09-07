@@ -1,6 +1,7 @@
 package com.financialtransactions.services;
 
 import com.financialtransactions.enumerations.MessageCode;
+import com.financialtransactions.exceptions.ExtractTokenClaimException;
 import com.financialtransactions.exceptions.GenerateTokenException;
 import com.financialtransactions.helper.MessageHelper;
 import io.jsonwebtoken.Claims;
@@ -30,12 +31,16 @@ public class JwtServiceImpl implements IJwtService {
     }
 
     @Override
-    public String extractLogin(String token) {
-        return extractClaim(token, Claims::getSubject);
+    public String extractLogin(String token){
+        try {
+            return extractClaim(token, Claims::getSubject);
+        }catch (Exception e) {
+            throw new ExtractTokenClaimException(this.messageHelper.getMessage(MessageCode.INVALID_AUTHORIZATION_HEADER), this.messageHelper.getMessage(MessageCode.INVALID_TOKEN));
+        }
     }
 
     @Override
-    public String generateToken(UserDetails userDetails) throws GenerateTokenException {
+    public String generateToken(UserDetails userDetails){
         if (Objects.isNull(userDetails)){
             throw new GenerateTokenException(this.messageHelper.getMessage(MessageCode.AUTHENTICATION_NOT_FINALLY),
                     this.messageHelper.getMessage(MessageCode.INTERNAL_SERVER_ERROR));
@@ -73,7 +78,7 @@ public class JwtServiceImpl implements IJwtService {
      * Extracts claim from token
      * @param token jwt token
      * @param claimsResolver claims resolver
-     * @param <T> type of claim
+     * @param <T> role of claim
      * @return claim
      */
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {

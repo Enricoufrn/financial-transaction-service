@@ -58,7 +58,7 @@ public class User implements UserDetails {
     public User() {
     }
 
-    public User(String name, String email, String login, String password, String document, Role role) {
+    public User(UUID id, String name, String email, String login, String password, String document, Role role) {
         this.name = name;
         this.email = email;
         this.login = login;
@@ -117,11 +117,11 @@ public class User implements UserDetails {
         this.document = document;
     }
 
-    public Role getUserType() {
+    public Role getRole() {
         return role;
     }
 
-    public void setUserType(Role role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 

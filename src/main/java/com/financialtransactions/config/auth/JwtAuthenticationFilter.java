@@ -9,6 +9,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -38,8 +39,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         final String authorizationHeader = request.getHeader(AUTHORIZATION_PREFIX_HEADER);
-        if (authorizationHeader != null && !authorizationHeader.startsWith(TOKEN_IDENTIFICATION_PREFIX)){
-            throw new CustomAuthorizationException(this.messageHelper.getMessage(MessageCode.AUTHORIZATION_HEADER_NOT_FOUND));
+        if (authorizationHeader == null || !authorizationHeader.startsWith(TOKEN_IDENTIFICATION_PREFIX)){
+//            throw new CustomAuthorizationException(this.messageHelper.getMessage(MessageCode.AUTHORIZATION_HEADER_NOT_FOUND));
+            filterChain.doFilter(request, response);
         }else{
             String token = authorizationHeader.replace(TOKEN_IDENTIFICATION_PREFIX, "");
             if (token.isEmpty()){
@@ -49,11 +51,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 String login = this.IJwtService.extractLogin(token);
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(login);
                 if (this.IJwtService.isValidToken(token, userDetails)) {
-                    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                    usernamePasswordAuthenticationToken.setDetails(
-                            new WebAuthenticationDetailsSource().buildDetails(request)
-                    );
-                    SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                    SecurityContext context = SecurityContextHolder.createEmptyContext();
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities());
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    context.setAuthentication(authToken);
+                    SecurityContextHolder.setContext(context);
                     filterChain.doFilter(request, response);
                 }else{
                     throw new CustomAuthorizationException(this.messageHelper.getMessage(MessageCode.INVALID_AUTHORIZATION_HEADER),

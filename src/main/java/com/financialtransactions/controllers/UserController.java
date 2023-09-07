@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -21,11 +22,15 @@ public class UserController extends GenericController{
     }
     @GetMapping
     public ResponseEntity<?> getUsers() {
-        return ResponseEntity.ok(this.userService.findAll());
+        List<User> users = this.userService.findAll();
+        List<UserDTO> userDTOS = users.stream().map(UserDTO::new).toList();
+        return ResponseEntity.ok(userDTOS);
     }
     @GetMapping(ID)
     public ResponseEntity<?> getUserById(@PathVariable UUID id) {
-        return ResponseEntity.ok(this.userService.findById(id));
+        User user = this.userService.findById(id);
+        UserDTO userDTO = new UserDTO(user);
+        return ResponseEntity.ok(userDTO);
     }
     @PostMapping
     public ResponseEntity<?> saveUser(@RequestBody UserDTO user) {

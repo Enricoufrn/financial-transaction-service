@@ -1,6 +1,10 @@
 package com.financialtransactions.enumerations;
 
 public enum MessageCode {
+
+    // General
+    BAD_REQUEST("bad.request"),
+    BAD_CREDENTIALS("bad.credentials"),
     //user
     USER_NOT_FOUND("user.not.found"),
     FINANCIAL_TRANSACTION_NOT_AUTHORIZED("financial.transaction.not.authorized"),
