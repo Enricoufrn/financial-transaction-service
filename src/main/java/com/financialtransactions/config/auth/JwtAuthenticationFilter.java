@@ -39,9 +39,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         final String authorizationHeader = request.getHeader(AUTHORIZATION_PREFIX_HEADER);
-        if (authorizationHeader == null || !authorizationHeader.startsWith(TOKEN_IDENTIFICATION_PREFIX)){
-//            throw new CustomAuthorizationException(this.messageHelper.getMessage(MessageCode.AUTHORIZATION_HEADER_NOT_FOUND));
+        if  (request.getServletPath().equals("/api/v1/auth/login")){
             filterChain.doFilter(request, response);
+            return;
+        }
+        if (authorizationHeader == null || !authorizationHeader.startsWith(TOKEN_IDENTIFICATION_PREFIX)){
+            throw new CustomAuthorizationException(this.messageHelper.getMessage(MessageCode.AUTHORIZATION_HEADER_NOT_FOUND));
         }else{
             String token = authorizationHeader.replace(TOKEN_IDENTIFICATION_PREFIX, "");
             if (token.isEmpty()){
