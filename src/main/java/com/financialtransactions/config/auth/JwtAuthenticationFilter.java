@@ -1,4 +1,4 @@
-package com.financialtransactions.config;
+package com.financialtransactions.config.auth;
 
 import com.financialtransactions.enumerations.MessageCode;
 import com.financialtransactions.exceptions.CustomAuthorizationException;

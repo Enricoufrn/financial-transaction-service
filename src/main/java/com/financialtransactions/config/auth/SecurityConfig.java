@@ -1,5 +1,6 @@
-package com.financialtransactions.config;
+package com.financialtransactions.config.auth;
 
+import com.financialtransactions.config.auth.JwtAuthenticationFilter;
 import com.financialtransactions.helper.MessageHelper;
 import com.financialtransactions.services.IJwtService;
 import com.financialtransactions.services.MyUserDetailsService;
