@@ -7,6 +7,9 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.DefaultUriBuilderFactory;
+import org.springframework.web.util.UriBuilder;
+import org.springframework.web.util.UriBuilderFactory;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Configuration
@@ -23,8 +26,8 @@ public class AppConfig {
         return messageSource;
     }
     @Bean
-    UriComponentsBuilder uriBuilder() {
-        return UriComponentsBuilder.newInstance();
+    UriBuilder uriBuilder() {
+        return new DefaultUriBuilderFactory().builder();
     }
     /**
      * Cryptography password role.

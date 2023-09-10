@@ -5,6 +5,7 @@ import com.financialtransactions.dtos.UserDTO;
 import com.financialtransactions.services.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
@@ -16,7 +17,7 @@ import java.util.UUID;
 public class UserController extends GenericController{
     private final UserService userService;
 
-    public UserController(UserService userService, UriComponentsBuilder uriBuilder) {
+    public UserController(UserService userService, UriBuilder uriBuilder) {
         super(uriBuilder);
         this.userService = userService;
     }
@@ -36,7 +37,7 @@ public class UserController extends GenericController{
     public ResponseEntity<?> saveUser(@RequestBody UserDTO user) {
         User savedUser = this.userService.save(user);
         UserDTO userDTO = new UserDTO(savedUser);
-        URI uri = uriBuilder.path(this.getByIdPath()).buildAndExpand(savedUser.getId()).toUri();
+        URI uri = this.uriBuilder.replacePath(this.getByIdPath()).build(savedUser.getId());
         return ResponseEntity.created(uri).body(userDTO);
     }
 

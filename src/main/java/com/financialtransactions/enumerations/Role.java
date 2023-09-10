@@ -11,4 +11,16 @@ public enum Role {
     public String getDescription() {
         return description;
     }
+    public static Role getRole(String roleName) {
+        Role role = null;
+        if (roleName != null && !roleName.isEmpty()){
+            for (Role r : Role.values()) {
+                if (r.name().equals(roleName)) {
+                    role = r;
+                    break;
+                }
+            }
+        }
+        return role;
+    }
 }

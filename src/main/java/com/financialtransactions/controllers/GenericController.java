@@ -1,13 +1,14 @@
 package com.financialtransactions.controllers;
 
+import org.springframework.web.util.UriBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
 public class GenericController {
-    protected final String CONTROLLER = "controller";
+    protected final String CONTROLLER = "Controller";
     protected final String ID = "/{id}";
-    protected final UriComponentsBuilder uriBuilder;
+    protected final UriBuilder uriBuilder;
 
-    public GenericController(UriComponentsBuilder uriBuilder) {
+    public GenericController(UriBuilder uriBuilder) {
         this.uriBuilder = uriBuilder;
     }
 
@@ -22,7 +23,7 @@ public class GenericController {
     protected String getPath() {
         String controllerName = this.inferControllerName();
         controllerName = controllerName.replaceAll("([a-z])([A-Z]+)", "$1-$2");
-        return controllerName;
+        return "/api/v1/" + controllerName.toLowerCase();
     }
     /**
      * Get the controller name
@@ -30,7 +31,7 @@ public class GenericController {
      * @return String
      */
     private String inferControllerName() {
-        String controllerName = this.getClass().getSimpleName().toLowerCase();
+        String controllerName = this.getClass().getSimpleName();
         return controllerName.replaceAll(CONTROLLER, "");
     }
 }

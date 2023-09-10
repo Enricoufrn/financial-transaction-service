@@ -28,8 +28,8 @@ public class Account {
 
     public Account(AccountDTO accountDTO, User user) {
         this.user = user;
-        this.number = accountDTO.number();
-        this.balance = accountDTO.balance();
+        this.number = accountDTO.getNumber();
+        this.balance = accountDTO.getBalance();
     }
 
     public Account(User user, BigDecimal balance) {

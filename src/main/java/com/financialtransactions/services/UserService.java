@@ -4,6 +4,7 @@ import com.financialtransactions.domain.User;
 import com.financialtransactions.dtos.UserDTO;
 import com.financialtransactions.enumerations.MessageCode;
 import com.financialtransactions.enumerations.Role;
+import com.financialtransactions.exceptions.BusinessException;
 import com.financialtransactions.exceptions.ResourceException;
 import com.financialtransactions.helper.MessageHelper;
 import com.financialtransactions.helper.PasswordHelper;
@@ -36,7 +37,7 @@ public class UserService {
     }
     public User save(UserDTO userDto) {
         User user = new User(userDto.id(), userDto.name(), userDto.email(), userDto.login(),
-                userDto.password(), userDto.document(), userDto.role());
+                userDto.password(), userDto.document(), Role.getRole(userDto.role()));
         this.validateUser(user);
         processPassword(user);
         return this.userRepository.save(user);
@@ -59,6 +60,8 @@ public class UserService {
     }
 
     public void validateUser(User user){
+        if (user == null) throw new BusinessException(this.messageHelper.getMessage(MessageCode.USER_MUST_NOT_BE_NULL), "");
+        if (user.getRole() == null) throw new BusinessException(this.messageHelper.getMessage(MessageCode.INVALID_USER), this.messageHelper.getMessage(MessageCode.USER_ROLE_MUST_NOT_BE_NULL));
         this.validateLogin(user.getLogin());
         this.validateEmail(user.getEmail());
         this.validateDocument(user.getDocument(), user.getRole());
@@ -110,6 +113,6 @@ public class UserService {
         userToUpdate.setEmail(user.email());
         userToUpdate.setLogin(user.login());
         userToUpdate.setDocument(user.document());
-        userToUpdate.setRole(user.role());
+        userToUpdate.setRole(Role.getRole(user.role()));
     }
 }

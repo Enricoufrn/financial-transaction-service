@@ -24,12 +24,13 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ApiError> handleBusinessException(BusinessException businessException) {
-        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.getReasonPhrase(), businessException.getMessage(), "");
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.getReasonPhrase(), businessException.getMessage(), businessException.getDetails());
         return getResponseEntity(apiError, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiError> handleException() {
+    public ResponseEntity<ApiError> handleException(Exception exception) {
+        exception.printStackTrace();
         ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), this.messageHelper.getMessage(MessageCode.INTERNAL_SERVER_ERROR), "");
         return getResponseEntity(apiError, HttpStatus.INTERNAL_SERVER_ERROR);
     }

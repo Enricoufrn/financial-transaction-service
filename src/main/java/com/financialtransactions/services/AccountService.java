@@ -4,6 +4,7 @@ import com.financialtransactions.domain.Account;
 import com.financialtransactions.domain.User;
 import com.financialtransactions.dtos.AccountDTO;
 import com.financialtransactions.enumerations.MessageCode;
+import com.financialtransactions.exceptions.BusinessException;
 import com.financialtransactions.exceptions.GenericCustomException;
 import com.financialtransactions.exceptions.ResourceException;
 import com.financialtransactions.helper.MessageHelper;
@@ -30,7 +31,7 @@ public class AccountService {
 
     public AccountDTO save(AccountDTO accountDto) {
         validateAccount(accountDto);
-        User user = this.userService.findById(accountDto.userId());
+        User user = this.userService.findById(accountDto.getUserId());
         Account account = new Account(accountDto, user);
         return new AccountDTO(this.accountRepository.save(account));
     }
@@ -70,13 +71,16 @@ public class AccountService {
 
     public void validateAccount(AccountDTO account){
         if(account == null){
-            throw new GenericCustomException(this.messageHelper.getMessage(MessageCode.INVALID_ACCOUNT), this.messageHelper.getMessage(MessageCode.ACCOUNT_MUST_NOT_BE_NULL));
+            throw new BusinessException(this.messageHelper.getMessage(MessageCode.INVALID_ACCOUNT), this.messageHelper.getMessage(MessageCode.ACCOUNT_MUST_NOT_BE_NULL));
         }
-        if(account.userId() == null){
-           throw new GenericCustomException(this.messageHelper.getMessage(MessageCode.INVALID_ACCOUNT), this.messageHelper.getMessage(MessageCode.USER_ACCOUNT_MUST_NOT_BE_NULL));
+        if(account.getUserId() == null){
+           throw new BusinessException(this.messageHelper.getMessage(MessageCode.INVALID_ACCOUNT), this.messageHelper.getMessage(MessageCode.USER_ACCOUNT_MUST_NOT_BE_NULL));
         }
-        this.accountRepository.findByNumber(account.number()).ifPresent(a -> {
-            throw new GenericCustomException(this.messageHelper.getMessage(MessageCode.INVALID_ACCOUNT), this.messageHelper.getMessage(MessageCode.ACCOUNT_NUMBER_ALREADY_EXISTS));
+        this.accountRepository.findByNumber(account.getNumber()).ifPresent(a -> {
+            throw new BusinessException(this.messageHelper.getMessage(MessageCode.INVALID_ACCOUNT), this.messageHelper.getMessage(MessageCode.ACCOUNT_NUMBER_ALREADY_EXISTS));
+        });
+        this.accountRepository.findByUserId(account.getUserId()).ifPresent(a -> {
+            throw new BusinessException(this.messageHelper.getMessage(MessageCode.INVALID_ACCOUNT), this.messageHelper.getMessage(MessageCode.ACCOUNT_FOR_THIS_USER_ALREADY_EXISTS));
         });
     }
 }
