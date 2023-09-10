@@ -1,9 +1,8 @@
 package com.financialtransactions.controllers;
 
 import org.springframework.web.util.UriBuilder;
-import org.springframework.web.util.UriComponentsBuilder;
 
-public class GenericController {
+public abstract class GenericController {
     protected final String CONTROLLER = "Controller";
     protected final String ID = "/{id}";
     protected final UriBuilder uriBuilder;

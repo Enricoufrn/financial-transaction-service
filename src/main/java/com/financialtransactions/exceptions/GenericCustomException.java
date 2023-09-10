@@ -1,6 +1,6 @@
 package com.financialtransactions.exceptions;
 
-public class GenericCustomException extends RuntimeException{
+public abstract class GenericCustomException extends RuntimeException{
     private String message;
     private String details;
     public GenericCustomException(String message) {
