@@ -3,7 +3,6 @@ package com.financialtransactions.controllers;
 import com.financialtransactions.domain.User;
 import com.financialtransactions.dtos.AuthenticationRequestDTO;
 import com.financialtransactions.dtos.UserDTO;
-import com.financialtransactions.exceptions.GenerateTokenException;
 import com.financialtransactions.services.IAuthenticationService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletResponse;
