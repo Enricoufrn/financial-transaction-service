@@ -63,11 +63,6 @@ public class SecurityConfig {
         http.authenticationManager(authManager(http));
         http.addFilterBefore(new JwtAuthenticationFilter(this.userDetailsService(), this.messageHelper, this.IJwtService), UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(new FilterChainExceptionHandler(this.resolver), JwtAuthenticationFilter.class);
-        // todo: implement logout
-//        http.logout(logout -> {
-//            logout.logoutUrl("/api/auth/logout");
-//            // todo: implement logout
-//        });
 
         return http.build();
     }

@@ -23,6 +23,7 @@ public enum MessageCode {
     ACCOUNT_NUMBER_ALREADY_EXISTS("account.number.already.exists"),
     ACCOUNT_FOR_THIS_USER_ALREADY_EXISTS("account.for.this.user.already.exists"),
     INVALID_ACCOUNT("invalid.account"),
+    ACCOUNT_FOR_THIS_USER_NOT_FOUND("account.for.this.user.not.found"),
 
     // auth
     AUTHORIZATION_HEADER_NOT_FOUND("authorization.header.not.found"),
@@ -32,7 +33,12 @@ public enum MessageCode {
     INVALID_PASSWORD("invalid.password"),
     INVALID_CREDENTIALS("invalid.credentials"),
     INVALID_AUTHORIZATION_HEADER("invalid.authorization.header"),
-    AUTHENTICATION_NOT_FINALLY("authentication.not.finally");
+    AUTHENTICATION_NOT_FINALLY("authentication.not.finally"),
+    // FinancialTransaction
+    SHOPKEEPER_USERS_CANNOT_CARRY_OUT_FINANCIAL_TRANSACTIONS("shopkeeper.users.cannot.carry.out.financial.transactions"),
+    SENDER_MUST_NOT_EQUALS_RECEIVER("sender.must.not.equals.receiver"),
+    INSUFFICIENT_FUNDS("insufficient.funds"),
+    ;
     private String code;
 
     MessageCode(String code) {

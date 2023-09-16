@@ -3,6 +3,7 @@ package com.financialtransactions.services;
 import com.financialtransactions.domain.Account;
 import com.financialtransactions.domain.User;
 import com.financialtransactions.dtos.AccountDTO;
+import com.financialtransactions.dtos.DepositDTO;
 import com.financialtransactions.enumerations.MessageCode;
 import com.financialtransactions.exceptions.BusinessException;
 import com.financialtransactions.exceptions.GenericCustomException;
@@ -37,23 +38,27 @@ public class AccountService {
     }
 
     public void delete(UUID id) {
+        // todo: users admin can delete any account
         this.accountRepository.findById(id).orElseThrow(() ->
                 new ResourceException(this.messageHelper.getMessage(MessageCode.ACCOUNT_NOT_FOUND), HttpStatus.NOT_FOUND, "id: "+ id));
         this.accountRepository.deleteById(id);
     }
 
     public AccountDTO findByUserId(UUID userId) {
+        // todo: check user permission
         Account account =  this.accountRepository.findByUserId(userId).orElseThrow(() ->
-                new ResourceException(this.messageHelper.getMessage(MessageCode.USER_NOT_FOUND), HttpStatus.NOT_FOUND, "userId: "+ userId));
+                new ResourceException(this.messageHelper.getMessage(MessageCode.ACCOUNT_FOR_THIS_USER_NOT_FOUND), HttpStatus.NOT_FOUND, "userId: "+ userId));
         return new AccountDTO(account);
     }
     public AccountDTO findByNumber(String number) {
+        //todo: check user permission
         Account account = this.accountRepository.findByNumber(number).orElseThrow(() ->
                 new ResourceException(this.messageHelper.getMessage(MessageCode.ACCOUNT_NOT_FOUND), HttpStatus.NOT_FOUND, "number: "+ number));
         return new AccountDTO(account);
     }
 
     public AccountDTO findById(UUID id) {
+        // todo: admin can get any account by id
         return new AccountDTO(this.getById(id));
     }
 
@@ -62,11 +67,26 @@ public class AccountService {
                 new ResourceException(this.messageHelper.getMessage(MessageCode.ACCOUNT_NOT_FOUND), HttpStatus.NOT_FOUND, "id: "+ id));
     }
 
-    public AccountDTO updateBalance(UUID accountId, BigDecimal value){
+    public AccountDTO updateBalance(UUID accountId, BigDecimal value, Boolean subtract){
+        // todo: check user permission
         Account account = this.getById(accountId);
+        if (subtract){
+            if(account.getBalance().compareTo(value) < 0){
+                throw new BusinessException(this.messageHelper.getMessage(MessageCode.INSUFFICIENT_FUNDS));
+            }
+            account.subtractBalance(value);
+        }else{
+            account.addBalance(value);
+        }
         account.addBalance(value);
         Account updatedAccount = this.accountRepository.save(account);
         return new AccountDTO(updatedAccount);
+    }
+
+    public AccountDTO deposit(DepositDTO depositDTO){
+        User loggedUser = this.userService.getLoggedUser();
+        AccountDTO account = this.findByUserId(loggedUser.getId());
+        return this.updateBalance(account.getId(), depositDTO.value(), false);
     }
 
     public void validateAccount(AccountDTO account){

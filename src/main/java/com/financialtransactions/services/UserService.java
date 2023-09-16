@@ -8,6 +8,7 @@ import com.financialtransactions.exceptions.BusinessException;
 import com.financialtransactions.exceptions.ResourceException;
 import com.financialtransactions.helper.MessageHelper;
 import com.financialtransactions.helper.PasswordHelper;
+import com.financialtransactions.helper.UserHelper;
 import com.financialtransactions.repositories.IUserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -22,11 +23,13 @@ public class UserService {
     private final IUserRepository userRepository;
     private final MessageHelper messageHelper;
     private final PasswordHelper passwordHelper;
+    private final UserHelper userHelper;
 
-    public UserService(IUserRepository userRepository, MessageHelper messageHelper, PasswordHelper passwordHelper) {
+    public UserService(IUserRepository userRepository, MessageHelper messageHelper, PasswordHelper passwordHelper, UserHelper userHelper) {
         this.userRepository = userRepository;
         this.messageHelper = messageHelper;
         this.passwordHelper = passwordHelper;
+        this.userHelper = userHelper;
     }
     public User findById(UUID id) {
         return this.userRepository.findById(id).orElseThrow(() ->
@@ -57,6 +60,10 @@ public class UserService {
     public User findByLogin(String login) {
         return this.userRepository.findByLogin(login).orElseThrow(() ->
                 new ResourceException(this.messageHelper.getMessage(MessageCode.USER_NOT_FOUND), HttpStatus.NOT_FOUND, "login: "+ login));
+    }
+
+    public User getLoggedUser(){
+        return this.userHelper.getLoggedUser();
     }
 
     public void validateUser(User user){

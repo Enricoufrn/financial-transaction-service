@@ -1,12 +1,12 @@
 package com.financialtransactions.controllers;
 
 import com.financialtransactions.dtos.AccountDTO;
+import com.financialtransactions.dtos.DepositDTO;
 import com.financialtransactions.services.AccountService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriBuilder;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.UUID;
@@ -14,7 +14,7 @@ import java.util.UUID;
 @Controller
 @RequestMapping("/api/v1/accounts")
 public class AccountController extends GenericController{
-    private AccountService accountService;
+    private final AccountService accountService;
     public AccountController(AccountService accountService, UriBuilder uriBuilder) {
         super(uriBuilder);
         this.accountService = accountService;
@@ -42,6 +42,12 @@ public class AccountController extends GenericController{
         URI uri = this.uriBuilder.replacePath(this.getByIdPath()).build(savedAccountDTO.getId());
         return ResponseEntity.created(uri).body(savedAccountDTO);
     }
+    @PostMapping("/deposit")
+    public ResponseEntity<AccountDTO> deposit(@RequestBody DepositDTO deposit) {
+        AccountDTO accountDTO = this.accountService.deposit(deposit);
+        return ResponseEntity.ok(accountDTO);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteAccount(@PathVariable UUID id) {
         this.accountService.delete(id);

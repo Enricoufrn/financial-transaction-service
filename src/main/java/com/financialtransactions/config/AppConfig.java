@@ -26,7 +26,7 @@ public class AppConfig {
         return messageSource;
     }
     @Bean
-    UriBuilder uriBuilder() {
+    public UriBuilder uriBuilder() {
         return new DefaultUriBuilderFactory().builder();
     }
     /**
