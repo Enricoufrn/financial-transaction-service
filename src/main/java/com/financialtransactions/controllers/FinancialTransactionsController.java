@@ -3,11 +3,10 @@ package com.financialtransactions.controllers;
 import com.financialtransactions.dtos.FinancialTransactionDTO;
 import com.financialtransactions.services.FinancialTransactionService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriBuilder;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/financial-transactions")
@@ -23,5 +22,10 @@ public class FinancialTransactionsController extends GenericController{
     public ResponseEntity<?> newFinancialTransaction(@RequestBody FinancialTransactionDTO financialTransactionDTO) {
         FinancialTransactionDTO savedFinancialTransactionDTO = this.financialTransactionService.create(financialTransactionDTO);
         return ResponseEntity.ok(savedFinancialTransactionDTO);
+    }
+
+    @GetMapping("/history/user/{id}")
+    public ResponseEntity<?> getFinancialTransactionsHistory(@PathVariable("id") UUID userId) {
+        return ResponseEntity.ok(this.financialTransactionService.getFinancialTransactionsHistory(userId));
     }
 }
