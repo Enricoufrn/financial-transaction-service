@@ -1,5 +1,6 @@
 package com.financialtransactions.services;
 
+import com.financialtransactions.domain.Account;
 import com.financialtransactions.domain.FinancialTransaction;
 import com.financialtransactions.domain.User;
 import com.financialtransactions.dtos.AccountDTO;
@@ -35,10 +36,10 @@ public class FinancialTransactionService {
         FinancialTransaction newFinancialTransaction = new FinancialTransaction(sender, receiver, financialTransaction.value());
         FinancialTransaction financialTransactionSaved = this.save(newFinancialTransaction);
         AccountDTO senderAccount = this.accountService.findByUserId(financialTransaction.senderId());
-        AccountDTO receiverAccount = this.accountService.findByUserId(financialTransaction.receiverId());
+        AccountDTO receiverAccount = this.accountService.findByUserIdWithoutCheckPermission(financialTransaction.receiverId());
         this.accountService.updateBalance(senderAccount.getId(), financialTransaction.value(), true);
-        this.accountService.updateBalance(receiverAccount.getId(), financialTransaction.value(), false);
-        return new FinancialTransactionDTO(financialTransactionSaved.getSender().getId(),
+        this.accountService.updateBalanceWithoutCheckPermission(receiverAccount.getId(), financialTransaction.value(), false);
+        return new FinancialTransactionDTO(financialTransactionSaved.getId(), financialTransactionSaved.getSender().getId(),
                 financialTransactionSaved.getReceiver().getId(), financialTransactionSaved.getValue());
     }
 

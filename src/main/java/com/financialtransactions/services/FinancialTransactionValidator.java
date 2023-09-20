@@ -36,7 +36,6 @@ public class FinancialTransactionValidator {
             messages.add(this.messageHelper.getMessage(MessageCode.SENDER_MUST_NOT_EQUALS_RECEIVER));
         }
         AccountDTO senderAccount = this.accountService.findByUserId(sender.getId());
-        AccountDTO receiverAccount = this.accountService.findByUserId(receiver.getId());
         if(senderAccount.getBalance().compareTo(financialTransaction.value()) < 0){
             messages.add(this.messageHelper.getMessage(MessageCode.INSUFFICIENT_FUNDS));
         }

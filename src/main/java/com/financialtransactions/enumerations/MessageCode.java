@@ -5,6 +5,8 @@ public enum MessageCode {
     // General
     BAD_REQUEST("bad.request"),
     BAD_CREDENTIALS("bad.credentials"),
+    PERMISSION_DENIED("permission.denied"),
+    ONLY_ADMIN_ALLOWED("only.admin.allowed"),
     //user
     INVALID_USER("invalid.user"),
     USER_NOT_FOUND("user.not.found"),
@@ -24,6 +26,7 @@ public enum MessageCode {
     ACCOUNT_FOR_THIS_USER_ALREADY_EXISTS("account.for.this.user.already.exists"),
     INVALID_ACCOUNT("invalid.account"),
     ACCOUNT_FOR_THIS_USER_NOT_FOUND("account.for.this.user.not.found"),
+    ONLY_ADMIN_CAN_DELETE_ACCOUNT("only.admin.can.delete.account"),
 
     // auth
     AUTHORIZATION_HEADER_NOT_FOUND("authorization.header.not.found"),

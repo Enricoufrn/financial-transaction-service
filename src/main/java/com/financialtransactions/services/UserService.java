@@ -65,6 +65,9 @@ public class UserService {
     public User getLoggedUser(){
         return this.userHelper.getLoggedUser();
     }
+    public boolean isLoggedUserAdmin(){
+        return this.userHelper.isLoggedUserAdmin();
+    }
 
     public void validateUser(User user){
         if (user == null) throw new BusinessException(this.messageHelper.getMessage(MessageCode.USER_MUST_NOT_BE_NULL), "");

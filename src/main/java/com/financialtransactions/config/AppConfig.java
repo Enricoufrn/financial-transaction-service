@@ -15,7 +15,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Configuration
 public class AppConfig {
     @Bean
-    public RestTemplate restTemplate() {
+    public RestTemplate restTemplate()
+    {
         return new RestTemplate();
     }
     @Bean

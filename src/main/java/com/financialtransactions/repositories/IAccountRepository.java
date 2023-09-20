@@ -15,6 +15,8 @@ public interface IAccountRepository extends JpaRepository<Account, UUID> {
     Optional<Account> findByUserId(@Param("userId") UUID userId);
     @Query(value = "SELECT * FROM public.accounts WHERE accounts.number = ?1", nativeQuery = true)
     Optional<Account> findByNumber(String number);
+    @Query(value = "SELECT (number) FROM public.accounts WHERE accounts.user_id = ?1", nativeQuery = true)
+    Optional<String> findNumberByUserId(UUID userId);
     @Override
     @Query(value = "SELECT * FROM public.accounts WHERE accounts.active = true", nativeQuery = true)
     List<Account> findAll();

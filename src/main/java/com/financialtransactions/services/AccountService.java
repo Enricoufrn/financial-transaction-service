@@ -38,27 +38,47 @@ public class AccountService {
     }
 
     public void delete(UUID id) {
-        // todo: users admin can delete any account
+        if (!this.userService.isLoggedUserAdmin()){
+            throw new BusinessException(this.messageHelper.getMessage(MessageCode.PERMISSION_DENIED), this.messageHelper.getMessage(MessageCode.ONLY_ADMIN_CAN_DELETE_ACCOUNT));
+        }
         this.accountRepository.findById(id).orElseThrow(() ->
                 new ResourceException(this.messageHelper.getMessage(MessageCode.ACCOUNT_NOT_FOUND), HttpStatus.NOT_FOUND, "id: "+ id));
         this.accountRepository.deleteById(id);
     }
 
     public AccountDTO findByUserId(UUID userId) {
-        // todo: check user permission
+        if (!this.userService.isLoggedUserAdmin() && !this.userService.getLoggedUser().getId().equals(userId)){
+            throw new BusinessException(this.messageHelper.getMessage(MessageCode.PERMISSION_DENIED));
+        }
+        return findByUserIdWithoutCheckPermission(userId);
+    }
+    public AccountDTO findByUserIdWithoutCheckPermission(UUID userId) {
         Account account =  this.accountRepository.findByUserId(userId).orElseThrow(() ->
                 new ResourceException(this.messageHelper.getMessage(MessageCode.ACCOUNT_FOR_THIS_USER_NOT_FOUND), HttpStatus.NOT_FOUND, "userId: "+ userId));
         return new AccountDTO(account);
     }
     public AccountDTO findByNumber(String number) {
-        //todo: check user permission
+        if(!this.userService.isLoggedUserAdmin()){
+            User loggedUser = this.userService.getLoggedUser();
+            String loggedUserAccountNumber = this.getAccountNumberByUserId(loggedUser.getId());
+            if (!loggedUserAccountNumber.equals(number)){
+                throw new BusinessException(this.messageHelper.getMessage(MessageCode.PERMISSION_DENIED));
+            }
+        }
         Account account = this.accountRepository.findByNumber(number).orElseThrow(() ->
                 new ResourceException(this.messageHelper.getMessage(MessageCode.ACCOUNT_NOT_FOUND), HttpStatus.NOT_FOUND, "number: "+ number));
         return new AccountDTO(account);
     }
 
+    public String getAccountNumberByUserId(UUID userId) {
+        return this.accountRepository.findNumberByUserId(userId).orElseThrow(() ->
+                new ResourceException(this.messageHelper.getMessage(MessageCode.ACCOUNT_FOR_THIS_USER_NOT_FOUND), HttpStatus.NOT_FOUND, "userId: "+ userId));
+    }
+
     public AccountDTO findById(UUID id) {
-        // todo: admin can get any account by id
+        if (!this.userService.isLoggedUserAdmin()){
+            throw new BusinessException(this.messageHelper.getMessage(MessageCode.PERMISSION_DENIED), this.messageHelper.getMessage(MessageCode.ONLY_ADMIN_ALLOWED));
+        }
         return new AccountDTO(this.getById(id));
     }
 
@@ -68,7 +88,16 @@ public class AccountService {
     }
 
     public AccountDTO updateBalance(UUID accountId, BigDecimal value, Boolean subtract){
-        // todo: check user permission
+        if(!this.userService.isLoggedUserAdmin()){
+            AccountDTO loggedUserAccount = this.findByUserId(this.userService.getLoggedUser().getId());
+            if (!loggedUserAccount.getId().equals(accountId)){
+                throw new BusinessException(this.messageHelper.getMessage(MessageCode.PERMISSION_DENIED));
+            }
+        }
+        return updateBalanceWithoutCheckPermission(accountId, value, subtract);
+    }
+
+    public AccountDTO updateBalanceWithoutCheckPermission(UUID accountId, BigDecimal value, Boolean subtract){
         Account account = this.getById(accountId);
         if (subtract){
             if(account.getBalance().compareTo(value) < 0){
@@ -78,14 +107,18 @@ public class AccountService {
         }else{
             account.addBalance(value);
         }
-        account.addBalance(value);
         Account updatedAccount = this.accountRepository.save(account);
         return new AccountDTO(updatedAccount);
     }
 
     public AccountDTO deposit(DepositDTO depositDTO){
-        User loggedUser = this.userService.getLoggedUser();
-        AccountDTO account = this.findByUserId(loggedUser.getId());
+        if (!this.userService.isLoggedUserAdmin()){
+            String loggedUserAccountNumber = this.getAccountNumberByUserId(this.userService.getLoggedUser().getId());
+            if (!loggedUserAccountNumber.equals(depositDTO.accountNumber())){
+                throw new BusinessException(this.messageHelper.getMessage(MessageCode.PERMISSION_DENIED));
+            }
+        }
+        AccountDTO account = this.findByNumber(depositDTO.accountNumber());
         return this.updateBalance(account.getId(), depositDTO.value(), false);
     }
 
