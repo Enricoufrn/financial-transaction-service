@@ -1,8 +1,10 @@
 package com.financialtransactions.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.UUID;
 
 @Entity
@@ -19,6 +21,9 @@ public class FinancialTransaction {
     private User receiver;
     private BigDecimal value;
     private Boolean reversed;
+    @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+    private Date date;
 
     // Constructors
     public FinancialTransaction() {
@@ -71,5 +76,18 @@ public class FinancialTransaction {
 
     public void setReversed(Boolean reversed) {
         this.reversed = reversed;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    @PrePersist
+    public void prePersist() {
+        this.date = new Date();
     }
 }
